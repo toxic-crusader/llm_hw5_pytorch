@@ -1,0 +1,19 @@
+[project]
+name = "hw5-pytorch"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "ipywidgets>=8.1.8",
+    "jupyter>=1.1.1",
+    "jupyterlab>=4.5.1",
+    "kagglehub>=0.3.13",
+    "notebook>=7.5.1",
+    "pillow>=12.0.0",
+    "torch>=2.9.1",
+    "torchvision>=0.24.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.10",
+]
