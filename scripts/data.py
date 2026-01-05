@@ -1,13 +1,13 @@
 # File: scripts/data.py
-import os
-from typing import Tuple, List
+from pathlib import Path
+from typing import Tuple, List, Union
 
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
 
 def make_dataloaders(
-    data_dir: str,
+    data_dir: Union[str, Path],
     batch_size: int = 32,
     num_workers: int = 2,
 ) -> Tuple[DataLoader, DataLoader, List[str]]:
@@ -16,8 +16,9 @@ def make_dataloaders(
 
     Parameters
     ----------
-    data_dir : str
+    data_dir : Union[str, Path]
         Root directory of the preprocessed dataset.
+        The directory must contain `train` and `val` subdirectories.
     batch_size : int, optional
         Number of samples per batch. Defaults to 32.
     num_workers : int, optional
@@ -39,9 +40,9 @@ def make_dataloaders(
         def md(text: str):
             pass
 
-    data_dir = os.path.abspath(data_dir)
-    train_dir = os.path.join(data_dir, "train")
-    val_dir = os.path.join(data_dir, "val")
+    data_dir = Path(data_dir).resolve()
+    train_dir = data_dir / "train"
+    val_dir = data_dir / "val"
 
     md("### Loading processed dataset")
     md(f"Dataset directory `{data_dir}`")
