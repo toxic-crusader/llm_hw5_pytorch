@@ -9,6 +9,7 @@ dependencies = [
     "kagglehub>=0.3.13",
     "notebook>=7.5.1",
     "pillow>=12.0.0",
+    "scikit-learn>=1.8.0",
     "torch>=2.9.1",
     "torchvision>=0.24.1",
 ]
