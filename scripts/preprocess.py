@@ -1,30 +1,39 @@
 # File: scripts/preprocess.py
 import os
 import shutil
+from pathlib import Path
+from typing import Union
 from PIL import Image
 
 
 def preprocess_dataset(
-    raw_dir: str,
-    processed_dir: str,
+    raw_dir: Union[str, Path],
+    processed_dir: Union[str, Path],
     image_size: int = 224,
-) -> str:
+    force: bool = False,
+) -> Path:
     """
-    Preprocesses a dataset of images.
+    Preprocesses a dataset of images and saves the result to a target directory.
+
+    If the target directory already exists and force is False, the function
+    skips preprocessing and returns the existing path.
 
     Parameters
     ----------
-    raw_dir : str
-        Source directory of the dataset.
-    processed_dir : str
-        Target directory of the preprocessed dataset.
+    raw_dir : Union[str, Path]
+        Source directory of the raw dataset.
+    processed_dir : Union[str, Path]
+        Target directory for the preprocessed dataset.
     image_size : int, optional
-        Size of the images after preprocessing. Defaults to 224.
+        Final image size after preprocessing. Defaults to 224.
+    force : bool, optional
+        If True, existing processed data will be removed and regenerated.
+        Defaults to False.
 
     Returns
     -------
-    str
-        The path to the preprocessed dataset.
+    Path
+        Path object pointing to the root of the preprocessed dataset.
     """
 
     try:
@@ -37,28 +46,35 @@ def preprocess_dataset(
         def md(text: str):
             pass
 
-    raw_dir = os.path.abspath(raw_dir)
-    processed_dir = os.path.abspath(processed_dir)
+    raw_dir = Path(raw_dir).resolve()
+    processed_dir = Path(processed_dir).resolve()
 
     md("### Preprocessing dataset")
     md(f"Source directory `{raw_dir}`")
     md(f"Target directory `{processed_dir}`")
     md(f"Image size `{image_size} x {image_size}`")
+    md(f"Force reprocessing `{force}`")
 
-    if os.path.exists(processed_dir):
+    if processed_dir.exists() and any(processed_dir.iterdir()) and not force:
+        md("### Preprocessing skipped")
+        md("Processed data already exists on disk")
+        return processed_dir
+
+    if processed_dir.exists() and force:
         shutil.rmtree(processed_dir)
 
     total_images = 0
     skipped_images = 0
 
     for root, _, files in os.walk(raw_dir):
-        rel_path = os.path.relpath(root, raw_dir)
-        target_root = os.path.join(processed_dir, rel_path)
-        os.makedirs(target_root, exist_ok=True)
+        root_path = Path(root)
+        rel_path = root_path.relative_to(raw_dir)
+        target_root = processed_dir / rel_path
+        target_root.mkdir(parents=True, exist_ok=True)
 
         for file in files:
-            src_path = os.path.join(root, file)
-            dst_path = os.path.join(target_root, file)
+            src_path = root_path / file
+            dst_path = target_root / file
 
             try:
                 with Image.open(src_path) as img:
