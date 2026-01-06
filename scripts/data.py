@@ -1,15 +1,16 @@
 # File: scripts/data.py
 from pathlib import Path
-from typing import Tuple, List, Union
+from typing import List, Tuple, Union
 
-from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
 
 
 def make_dataloaders(
     data_dir: Union[str, Path],
     batch_size: int = 32,
     num_workers: int = 2,
+    augment: bool = False,
 ) -> Tuple[DataLoader, DataLoader, List[str]]:
     """
     Creates PyTorch DataLoaders from a preprocessed image dataset.
@@ -23,6 +24,9 @@ def make_dataloaders(
         Number of samples per batch. Defaults to 32.
     num_workers : int, optional
         Number of worker processes for data loading. Defaults to 2.
+    augment : bool, optional
+        If True, apply data augmentation to the training dataset only.
+        Defaults to False.
 
     Returns
     -------
@@ -36,7 +40,6 @@ def make_dataloaders(
         def md(text: str):
             display(Markdown(text))
     except Exception:
-
         def md(text: str):
             pass
 
@@ -47,8 +50,9 @@ def make_dataloaders(
     md("### Loading processed dataset")
     md(f"Dataset directory `{data_dir}`")
     md(f"Batch size `{batch_size}`")
+    md(f"Augmentation `{augment}`")
 
-    transform = transforms.Compose(
+    val_transform = transforms.Compose(
         [
             transforms.ToTensor(),
             transforms.Normalize(
@@ -58,14 +62,35 @@ def make_dataloaders(
         ]
     )
 
+    if augment:
+        train_transform = transforms.Compose(
+            [
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.RandomRotation(degrees=10),
+                transforms.ColorJitter(
+                    brightness=0.15,
+                    contrast=0.15,
+                    saturation=0.10,
+                    hue=0.02,
+                ),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225],
+                ),
+            ]
+        )
+    else:
+        train_transform = val_transform
+
     train_dataset = datasets.ImageFolder(
         root=train_dir,
-        transform=transform,
+        transform=train_transform,
     )
 
     val_dataset = datasets.ImageFolder(
         root=val_dir,
-        transform=transform,
+        transform=val_transform,
     )
 
     train_loader = DataLoader(
