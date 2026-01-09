@@ -10,8 +10,8 @@
 curl -Ls https://astral.sh/uv/install.sh | bash
 
 # Клонирование проекта
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone git clone git@github.com:toxic-crusader/llm_hw5_pytorch.git
+cd llm_hw5_pytorch
 
 # Создание виртуального окружения и установка зависимостей
 uv venv
