@@ -18,7 +18,7 @@ uv venv
 uv sync
 ```
 
-> Если используешь ноутбук: открой `notebooks/animal_faces_classification.ipynb` в Google Colab или локально.
+> Если используешь ноутбук: открой `animal_faces_classification.ipynb` в Google Colab или локально.
 
 
 
