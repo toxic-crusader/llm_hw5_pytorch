@@ -15,7 +15,3 @@ dependencies = [
     "torchvision>=0.24.1",
 ]
 
-[dependency-groups]
-dev = [
-    "ruff>=0.14.10",
-]
